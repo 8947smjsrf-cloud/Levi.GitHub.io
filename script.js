@@ -3,6 +3,27 @@ const audioTracks = {
   // "Your song title": "assets/your-song.mp3"
 };
 
+// The photos are stored in the repository root. Older markup points to
+// assets/images/*, so transparently resolve those paths to the photos that
+// are actually present in this site.
+const photoFallbacks = {
+  "personal-photo.jpg": "portrait.jpg",
+  "madison-beer.jpg": "hero.jpg",
+  "taylor-swift.jpg": "lifestyle.jpg",
+  "guns-n-roses.jpg": "founder.jpg"
+};
+
+document.querySelectorAll("img").forEach((image) => {
+  image.addEventListener("error", () => {
+    const filename = image.src.split("/").pop().split("?")[0];
+    const fallback = photoFallbacks[filename] || "hero.jpg";
+    if (!image.dataset.fallbackApplied) {
+      image.dataset.fallbackApplied = "true";
+      image.src = fallback;
+    }
+  });
+});
+
 const revealObserver = new IntersectionObserver((entries) => {
   entries.forEach((entry) => {
     if (entry.isIntersecting) {
