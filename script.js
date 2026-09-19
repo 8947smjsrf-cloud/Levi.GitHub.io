@@ -3,23 +3,28 @@ const audioTracks = {
   // "Your song title": "assets/your-song.mp3"
 };
 
-// The photos are stored in the repository root. Older markup points to
-// assets/images/*, so transparently resolve those paths to the photos that
-// are actually present in this site.
+// The photos live in the repository root. Resolve every old placeholder path
+// immediately so the images work on GitHub Pages as well as locally.
 const photoFallbacks = {
   "personal-photo.jpg": "portrait.jpg",
   "madison-beer.jpg": "hero.jpg",
   "taylor-swift.jpg": "lifestyle.jpg",
-  "guns-n-roses.jpg": "founder.jpg"
+  "guns-n-roses.jpg": "founder.jpg",
+  "album-artwork.jpg": "hero.jpg",
+  "gallery-01.jpg": "portrait.jpg",
+  "gallery-02.jpg": "lifestyle.jpg",
+  "gallery-03.jpg": "founder.jpg"
 };
 
 document.querySelectorAll("img").forEach((image) => {
+  const filename = image.getAttribute("src").split("/").pop().split("?")[0];
+  const fallback = photoFallbacks[filename];
+  if (fallback) image.src = fallback;
+
   image.addEventListener("error", () => {
-    const filename = image.src.split("/").pop().split("?")[0];
-    const fallback = photoFallbacks[filename] || "hero.jpg";
     if (!image.dataset.fallbackApplied) {
       image.dataset.fallbackApplied = "true";
-      image.src = fallback;
+      image.src = "hero.jpg";
     }
   });
 });
@@ -98,7 +103,6 @@ document.querySelectorAll(".flower").forEach((flower) => {
   flower.addEventListener("blur", () => tooltip.classList.remove("visible"));
 });
 
-// A very light pointer parallax keeps the glass feeling alive without heavy motion.
 if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
   document.addEventListener("pointermove", (event) => {
     const x = (event.clientX / window.innerWidth - .5) * 2;
